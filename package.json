@@ -1,0 +1,25 @@
+{
+  "name": "gulp-react-component-library",
+  "version": "1.0.0",
+  "description": "Gulp plugin for building a React Component Library in HTML",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "react",
+    "gulp",
+    "component-library"
+  ],
+  "author": "Offsider",
+  "license": "MIT",
+  "dependencies": {
+    "event-stream": "^3.3.1",
+    "gulp-util": "^3.0.5",
+    "jade": "^1.11.0",
+    "mkdirp": "^0.5.1",
+    "react": "^0.13.3",
+    "stream-from-array": "^0.1.0",
+    "through2": "^2.0.0"
+  }
+}
