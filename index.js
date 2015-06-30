@@ -47,7 +47,7 @@ module.exports = function(opts) {
 
       var variations = dataKeys.map(function(key) {
         var props = pageData[key];
-        var element = React.createElement( Template, props, [] );
+        var element = React.createElement( Template, props, props.children || [] );
         var pageTitle = Template.getPageTitle ? Template.getPageTitle(props)
                                               : null;
         var pageHTML = React.renderToStaticMarkup(element);
