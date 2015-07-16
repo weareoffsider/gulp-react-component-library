@@ -5,6 +5,7 @@ var gutil = require("gulp-util")
     React = require("react/addons"),
     es = require("event-stream"),
     fs = require("fs"),
+    _ = require("lodash"),
     streamFromArray = require("stream-from-array");
 
 module.exports = function(opts) {
@@ -12,6 +13,7 @@ module.exports = function(opts) {
   if (!opts.data) throw new Error("No data Directory provided.");
   if (!opts.dest) throw new Error("No Destination Directory provided.");
   if (!opts.wrapper) throw new Error("No Wrapper Template provided.");
+  opts.defaultProps = opts.defaultProps || {}
 
   return through.obj(function(file, enc, cb) {
     var Template = require(file.history[0]);
@@ -46,7 +48,7 @@ module.exports = function(opts) {
       if (err) return cb(err);
 
       var variations = dataKeys.map(function(key) {
-        var props = pageData[key];
+        var props = _.assign({}, opts.defaultProps, pageData[key]);
         var element = React.createElement( Template, props, props.children || [] );
         var pageTitle = Template.getPageTitle ? Template.getPageTitle(props)
                                               : null;

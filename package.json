@@ -1,6 +1,6 @@
 {
   "name": "gulp-react-component-library",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Gulp plugin for building a React Component Library in HTML",
   "main": "index.js",
   "scripts": {
@@ -17,6 +17,7 @@
     "event-stream": "^3.3.1",
     "gulp-util": "^3.0.5",
     "jade": "^1.11.0",
+    "lodash": "^3.10.0",
     "mkdirp": "^0.5.1",
     "react": "^0.13.3",
     "stream-from-array": "^0.1.0",
