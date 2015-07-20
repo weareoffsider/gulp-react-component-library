@@ -33,6 +33,9 @@ module.exports = function(opts) {
       return cb(null, null);
     }
 
+    var prependStyleguideHtml = Template.prependStyleguide || "";
+    var appendStyleguideHtml = Template.appendStyleguide || "";
+
     if (!pageData) {
       pageData = {"default": {}};
     }
@@ -62,6 +65,8 @@ module.exports = function(opts) {
           key: key,
           requirePath: "./" + requirePath,
           title: pageTitle,
+          prependHtml: prependStyleguideHtml
+          appendHtml: appendStyleguideHtml
           html: pageHTML,
           json: JSON.stringify(props),
           props: props,

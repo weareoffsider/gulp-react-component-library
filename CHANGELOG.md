@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased Changes
 
+## 1.4.0 - 2015-07-21
+### Added
+- Add ability to set prependStyleguide and appendStylegude on react components,
+  which feeds into the component library render. This can be used to wrap
+  components that cannot be rendered on their own without surrounding markup,
+  such as table rows.
+
 ## 1.3.1 - 2015-07-20
 ### Fixed
 - Fixed pathing for incremental rebuild when listening to something other than
