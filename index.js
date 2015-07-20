@@ -65,8 +65,8 @@ module.exports = function(opts) {
           key: key,
           requirePath: "./" + requirePath,
           title: pageTitle,
-          prependHtml: prependStyleguideHtml
-          appendHtml: appendStyleguideHtml
+          prependHtml: prependStyleguideHtml,
+          appendHtml: appendStyleguideHtml,
           html: pageHTML,
           json: JSON.stringify(props),
           props: props,

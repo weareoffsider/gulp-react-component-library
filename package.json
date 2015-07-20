@@ -1,6 +1,6 @@
 {
   "name": "gulp-react-component-library",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Gulp plugin for building a React Component Library in HTML",
   "main": "index.js",
   "scripts": {
