@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased Changes
 
+## 1.3.0 - 2015-07-20
+### Added
+- Added option for 'templates', which can define the base directory for all
+  scripts, which allows you to use incremental rebuilding whilst watching
+  test data or the script files themselves.
+
 ## 1.2.0 - 2015-07-17
 ### Added
 - Added option for 'defaultProps', which can define some default properties

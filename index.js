@@ -16,8 +16,12 @@ module.exports = function(opts) {
   opts.defaultProps = opts.defaultProps || {}
 
   return through.obj(function(file, enc, cb) {
-    var Template = require(file.history[0]);
     var requirePath = file.relative;
+    if (opts.templates) {
+      var Template = require(process.cwd() + "/" + opts.templates + "/" + requirePath);
+    } else {
+      var Template = require(file.history[0]);
+    }
     try {
       var pageData = require(process.cwd() + "/" + opts.data + "/" + requirePath);
     } catch (err) {
