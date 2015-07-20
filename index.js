@@ -19,6 +19,7 @@ module.exports = function(opts) {
     var requirePath = file.relative;
     if (opts.templates) {
       var Template = require(process.cwd() + "/" + opts.templates + "/" + requirePath);
+      file.history[0] = process.cwd() + "/" + opts.templates + "/" + requirePath
     } else {
       var Template = require(file.history[0]);
     }
@@ -46,7 +47,7 @@ module.exports = function(opts) {
     var segments = file.path.split("/");
     var fName = segments[segments.length - 1].replace(".react.html", ".html");
     segments[segments.length - 1] = fName;
-    file.path = segments.join("/");
+    var destPath = [process.cwd(), dirPath, fName].join("/");
 
     mkdirp(dirPath, function(err) {
       if (err) return cb(err);
@@ -71,8 +72,9 @@ module.exports = function(opts) {
       if (isPaged) {
         variations.forEach(function(variation) {
           var clone = file.clone();
+          var clonePath = destPath;
           if (variation.key !== "default") {
-            clone.path = gutil.replaceExtension(clone.path, "-" + variation.key + ".html");
+            clonePath = gutil.replaceExtension(clonePath, "-" + variation.key + ".html");
           }
           var jadeOpts = {
             pretty: true,
@@ -81,7 +83,8 @@ module.exports = function(opts) {
           };
 
           clone.contents = new Buffer(jade.renderFile(opts.wrapper, jadeOpts));
-          wstream = fs.createWriteStream(opts.dest + "/" + clone.relative);
+          clone.path = clonePath;
+          wstream = fs.createWriteStream(clonePath);
           wstream.write(clone.contents);
           wstream.end();
           outs.push(clone);
@@ -96,7 +99,8 @@ module.exports = function(opts) {
         };
 
         clone.contents = new Buffer(jade.renderFile(opts.wrapper, jadeOpts));
-        wstream = fs.createWriteStream(opts.dest + "/" + clone.relative);
+        clone.path = destPath;
+        wstream = fs.createWriteStream(destPath);
         wstream.write(clone.contents);
         wstream.end();
         outs.push(clone);

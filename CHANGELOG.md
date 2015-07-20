@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased Changes
 
+## 1.3.1 - 2015-07-20
+### Fixed
+- Fixed pathing for incremental rebuild when listening to something other than
+  the script files.
+
 ## 1.3.0 - 2015-07-20
 ### Added
 - Added option for 'templates', which can define the base directory for all
