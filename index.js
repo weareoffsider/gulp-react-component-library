@@ -16,101 +16,109 @@ module.exports = function(opts) {
   opts.defaultProps = opts.defaultProps || {}
 
   return through.obj(function(file, enc, cb) {
-    var requirePath = file.relative;
-    if (opts.templates) {
-      var Template = require(process.cwd() + "/" + opts.templates + "/" + requirePath);
-      file.history[0] = process.cwd() + "/" + opts.templates + "/" + requirePath
-    } else {
-      var Template = require(file.history[0]);
-    }
     try {
-      var pageData = require(process.cwd() + "/" + opts.data + "/" + requirePath);
-    } catch (err) {
-      var pageData = null;
-    }
+      var requirePath = file.relative;
+      if (opts.templates) {
+        var Template = require(process.cwd() + "/" + opts.templates + "/" + requirePath);
+        file.history[0] = process.cwd() + "/" + opts.templates + "/" + requirePath
+      } else {
+        var Template = require(file.history[0]);
+      }
+      try {
+        var pageData = require(process.cwd() + "/" + opts.data + "/" + requirePath);
+      } catch (err) {
+        var pageData = null;
+      }
 
-    if (!Template.applyToStyleguide && !pageData) {
-      return cb(null, null);
-    }
+      if (!Template.applyToStyleguide && !pageData) {
+        return cb(null, null);
+      }
 
-    var prependStyleguideHtml = Template.prependStyleguide || "";
-    var appendStyleguideHtml = Template.appendStyleguide || "";
+      var prependStyleguideHtml = Template.prependStyleguide || "";
+      var appendStyleguideHtml = Template.appendStyleguide || "";
 
-    if (!pageData) {
-      pageData = {"default": {}};
-    }
+      if (!pageData) {
+        pageData = {"default": {}};
+      }
 
-    var isPaged = !!pageData.pagedVariations;
-    var dataKeys = Object.keys(pageData).filter(function(key) {
-      return key !== "pagedVariations"
-    });
-
-    var dirPath = opts.dest + "/" + requirePath.split("/").slice(0, -1).join("/");
-    file.path = gutil.replaceExtension(file.path, ".html");
-    var segments = file.path.split("/");
-    var fName = segments[segments.length - 1].replace(".react.html", ".html");
-    segments[segments.length - 1] = fName;
-    var destPath = [process.cwd(), dirPath, fName].join("/");
-
-    mkdirp(dirPath, function(err) {
-      if (err) return cb(err);
-
-      var variations = dataKeys.map(function(key) {
-        var props = _.assign({}, opts.defaultProps, pageData[key]);
-        var element = React.createElement( Template, props, props.children || [] );
-        var pageTitle = Template.getPageTitle ? Template.getPageTitle(props)
-                                              : null;
-        var pageHTML = React.renderToStaticMarkup(element);
-        return {
-          key: key,
-          requirePath: "./" + requirePath,
-          title: pageTitle,
-          prependHtml: prependStyleguideHtml,
-          appendHtml: appendStyleguideHtml,
-          html: pageHTML,
-          json: JSON.stringify(props),
-          props: props,
-        }
+      var isPaged = !!pageData.pagedVariations;
+      var dataKeys = Object.keys(pageData).filter(function(key) {
+        return key !== "pagedVariations"
       });
 
-      var outs = [];
-      if (isPaged) {
-        variations.forEach(function(variation) {
-          var clone = file.clone();
-          var clonePath = destPath;
-          if (variation.key !== "default") {
-            clonePath = gutil.replaceExtension(clonePath, "-" + variation.key + ".html");
+      var dirPath = opts.dest + "/" + requirePath.split("/").slice(0, -1).join("/");
+      file.path = gutil.replaceExtension(file.path, ".html");
+      var segments = file.path.split("/");
+      var fName = segments[segments.length - 1].replace(".react.html", ".html");
+      segments[segments.length - 1] = fName;
+      var destPath = [process.cwd(), dirPath, fName].join("/");
+
+      mkdirp(dirPath, function(err) {
+        if (err) return cb(err);
+
+        try {
+          var variations = dataKeys.map(function(key) {
+            var props = _.assign({}, opts.defaultProps, pageData[key]);
+            var element = React.createElement( Template, props, props.children || [] );
+            var pageTitle = Template.getPageTitle ? Template.getPageTitle(props)
+                                                  : null;
+            var pageHTML = React.renderToStaticMarkup(element);
+            return {
+              key: key,
+              requirePath: "./" + requirePath,
+              title: pageTitle,
+              prependHtml: prependStyleguideHtml,
+              appendHtml: appendStyleguideHtml,
+              html: pageHTML,
+              json: JSON.stringify(props),
+              props: props,
+            }
+          });
+
+          var outs = [];
+          if (isPaged) {
+            variations.forEach(function(variation) {
+              var clone = file.clone();
+              var clonePath = destPath;
+              if (variation.key !== "default") {
+                clonePath = gutil.replaceExtension(clonePath, "-" + variation.key + ".html");
+              }
+              var jadeOpts = {
+                pretty: true,
+                pageTitle: variation.title,
+                variations: [variation],
+              };
+
+              clone.contents = new Buffer(jade.renderFile(opts.wrapper, jadeOpts));
+              clone.path = clonePath;
+              wstream = fs.createWriteStream(clonePath);
+              wstream.write(clone.contents);
+              wstream.end();
+              outs.push(clone);
+            });
+          } else {
+            var clone = file.clone();
+
+            var jadeOpts = {
+              pretty: true,
+              pageTitle: variations[0].title,
+              variations: variations,
+            };
+
+            clone.contents = new Buffer(jade.renderFile(opts.wrapper, jadeOpts));
+            clone.path = destPath;
+            wstream = fs.createWriteStream(destPath);
+            wstream.write(clone.contents);
+            wstream.end();
+            outs.push(clone);
           }
-          var jadeOpts = {
-            pretty: true,
-            pageTitle: variation.title,
-            variations: [variation],
-          };
-
-          clone.contents = new Buffer(jade.renderFile(opts.wrapper, jadeOpts));
-          clone.path = clonePath;
-          wstream = fs.createWriteStream(clonePath);
-          wstream.write(clone.contents);
-          wstream.end();
-          outs.push(clone);
-        });
-      } else {
-        var clone = file.clone();
-
-        var jadeOpts = {
-          pretty: true,
-          pageTitle: variations[0].title,
-          variations: variations,
-        };
-
-        clone.contents = new Buffer(jade.renderFile(opts.wrapper, jadeOpts));
-        clone.path = destPath;
-        wstream = fs.createWriteStream(destPath);
-        wstream.write(clone.contents);
-        wstream.end();
-        outs.push(clone);
-      }
-      cb(null, outs[0]);
-    });
+          cb(null, outs[0]);
+        } catch(err) {
+          cb(err, file);
+        }
+      });
+    } catch(err) {
+      cb(err, file)
+    }
   });
 };
