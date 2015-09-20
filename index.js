@@ -10,7 +10,7 @@ var gutil = require("gulp-util")
 
 module.exports = function(opts) {
   opts = opts || {};
-  if (!opts.data) throw new Error("No data Directory provided.");
+  if (!opts.data) throw new Error("No data Directory or transformer provided.");
   if (!opts.dest) throw new Error("No Destination Directory provided.");
   if (!opts.wrapper) throw new Error("No Wrapper Template provided.");
   opts.defaultProps = opts.defaultProps || {}
@@ -25,7 +25,11 @@ module.exports = function(opts) {
         var Template = require(file.history[0]);
       }
       try {
-        var pageData = require(process.cwd() + "/" + opts.data + "/" + requirePath);
+        if (typeof opts.data == "function") {
+          var pageData = require(opts.data(file.history[0]));
+        } else {
+          var pageData = require(process.cwd() + "/" + opts.data + "/" + requirePath);
+        }
       } catch (err) {
         var pageData = null;
       }

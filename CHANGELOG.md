@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased Changes
 
+## 1.5.0 - 2015-09-20
+### Added
+- data option can be a function instead, so test data can be supplied in some
+  other location (for example side by side with the component).
+
 ## 1.4.2 - 2015-07-29
 ### Added
 - Exceptions catches added to callback stream, to allow better surfacing of
