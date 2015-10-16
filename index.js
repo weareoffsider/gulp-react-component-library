@@ -14,6 +14,7 @@ module.exports = function(opts) {
   if (!opts.dest) throw new Error("No Destination Directory provided.");
   if (!opts.wrapper) throw new Error("No Wrapper Template provided.");
   opts.defaultProps = opts.defaultProps || {}
+  opts.jadeVariables = opts.jadeVariables || {}
 
   return through.obj(function(file, enc, cb) {
     try {
@@ -87,11 +88,11 @@ module.exports = function(opts) {
               if (variation.key !== "default") {
                 clonePath = gutil.replaceExtension(clonePath, "-" + variation.key + ".html");
               }
-              var jadeOpts = {
+              var jadeOpts = _.assign({
                 pretty: true,
                 pageTitle: variation.title,
                 variations: [variation],
-              };
+              }, opts.jadeVariables);
 
               clone.contents = new Buffer(jade.renderFile(opts.wrapper, jadeOpts));
               clone.path = clonePath;
@@ -103,11 +104,11 @@ module.exports = function(opts) {
           } else {
             var clone = file.clone();
 
-            var jadeOpts = {
+            var jadeOpts = _.assign({
               pretty: true,
               pageTitle: variations[0].title,
               variations: variations,
-            };
+            }, opts.jadeVariables);
 
             clone.contents = new Buffer(jade.renderFile(opts.wrapper, jadeOpts));
             clone.path = destPath;

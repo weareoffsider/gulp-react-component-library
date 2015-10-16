@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased Changes
 
+## 1.6.0 - 2015-10-16
+### Added
+- Jade Variables can be provided to the wrapper renderer via opts.jadeVariables
+
 ## 1.5.0 - 2015-09-20
 ### Added
 - data option can be a function instead, so test data can be supplied in some
