@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased Changes
 
+## 1.7.0 - 2015-10-19
+### Added
+- Props Serializer can be customised (not just JSON.stringify, as by default).
+  Can be changed with opts.propsSerializer
+
 ## 1.6.0 - 2015-10-16
 ### Added
 - Jade Variables can be provided to the wrapper renderer via opts.jadeVariables

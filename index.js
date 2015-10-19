@@ -15,6 +15,7 @@ module.exports = function(opts) {
   if (!opts.wrapper) throw new Error("No Wrapper Template provided.");
   opts.defaultProps = opts.defaultProps || {}
   opts.jadeVariables = opts.jadeVariables || {}
+  opts.propsSerializer = opts.propsSerializer || JSON.stringify
 
   return through.obj(function(file, enc, cb) {
     try {
@@ -75,7 +76,7 @@ module.exports = function(opts) {
               prependHtml: prependStyleguideHtml,
               appendHtml: appendStyleguideHtml,
               html: pageHTML,
-              json: JSON.stringify(props),
+              json: opts.propsSerializer(props),
               props: props,
             }
           });
