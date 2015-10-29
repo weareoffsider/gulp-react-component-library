@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased Changes
 
+## 1.8.1 - 2015-10-30
+### Fixed
+- Dumy typo.
+
 ## 1.8.0 - 2015-10-30
 ### Added
 - Ability to provide custom render function and page title getter.

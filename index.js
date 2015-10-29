@@ -28,7 +28,7 @@ module.exports = function(opts) {
   opts.defaultProps = opts.defaultProps || {}
   opts.jadeVariables = opts.jadeVariables || {}
   opts.renderer = opts.renderer || defaultRenderer;
-  opts.titleGetter = opts.titleGetter || defaultTitleGettter;
+  opts.titleGetter = opts.titleGetter || defaultTitleGetter;
   opts.propsSerializer = opts.propsSerializer || JSON.stringify;
 
   return through.obj(function(file, enc, cb) {
