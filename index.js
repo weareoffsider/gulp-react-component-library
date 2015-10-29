@@ -8,6 +8,18 @@ var gutil = require("gulp-util")
     _ = require("lodash"),
     streamFromArray = require("stream-from-array");
 
+
+var defaultTitleGetter = function(component, props) {
+  return component.getPageTitle ? component.getPageTitle(props) : null;
+}
+
+var defaultRenderer = function(component, props) {
+  var element = React.createElement(component, props, props.children || [] );
+  var pageTitle = component.getPageTitle ? component.getPageTitle(props)
+                                         : null;
+  return React.renderToStaticMarkup(element);
+}
+
 module.exports = function(opts) {
   opts = opts || {};
   if (!opts.data) throw new Error("No data Directory or transformer provided.");
@@ -15,7 +27,9 @@ module.exports = function(opts) {
   if (!opts.wrapper) throw new Error("No Wrapper Template provided.");
   opts.defaultProps = opts.defaultProps || {}
   opts.jadeVariables = opts.jadeVariables || {}
-  opts.propsSerializer = opts.propsSerializer || JSON.stringify
+  opts.renderer = opts.renderer || defaultRenderer;
+  opts.titleGetter = opts.titleGetter || defaultTitleGettter;
+  opts.propsSerializer = opts.propsSerializer || JSON.stringify;
 
   return through.obj(function(file, enc, cb) {
     try {
@@ -36,7 +50,7 @@ module.exports = function(opts) {
         var pageData = null;
       }
 
-      if (!Template.applyToStyleguide && !pageData) {
+      if (!Template.applyToStyleguide && !pageData && !opts.alwaysRender) {
         return cb(null, null);
       }
 
@@ -65,10 +79,8 @@ module.exports = function(opts) {
         try {
           var variations = dataKeys.map(function(key) {
             var props = _.assign({}, opts.defaultProps, pageData[key]);
-            var element = React.createElement( Template, props, props.children || [] );
-            var pageTitle = Template.getPageTitle ? Template.getPageTitle(props)
-                                                  : null;
-            var pageHTML = React.renderToStaticMarkup(element);
+            var pageTitle = opts.titleGetter(Template, props);
+            var pageHTML = opts.renderer(Template, props);
             return {
               key: key,
               requirePath: "./" + requirePath,
