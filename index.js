@@ -40,6 +40,11 @@ module.exports = function(opts) {
       } else {
         var Template = require(file.history[0]);
       }
+
+      if (Template["default"]) {
+        Template = Template["default"]
+      }
+
       try {
         if (typeof opts.data == "function") {
           var pageData = require(opts.data(file.history[0]));
